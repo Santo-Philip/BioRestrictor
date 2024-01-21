@@ -106,7 +106,7 @@ async def start(client, message):
                 
 @app.on_message(filters.group & ~filters.left_chat_member)
 async def msg_check(client,message):
-        time = initial_time + timedelta(hours=int(3))
+        time = initial_time + timedelta(hours=int(5))
         user_id = message.from_user.id
         first = message.from_user.first_name
         last = message.from_user.last_name
