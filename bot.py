@@ -9,7 +9,7 @@ import re
 
 api_id = 1474940
 api_hash = "779e8d2b32ef76d0b7a11fb5f132a6b6"
-bot_token = "5804042113:AAH4c4WG0JOuo8S3r9RfnXdjPg89iPdDMug"
+bot_token = "6513923912:AAHfSOlUfPSCR-CSRs6S4jDpl3Meb8pIpQM"
 
 app = Client(
         "my_bot",
