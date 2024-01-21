@@ -4,11 +4,12 @@ from pyrogram.raw.functions.users import GetFullUser
 from pyrogram.raw import functions, types
 from pyrogram.errors import BadRequest
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from datetime import datetime,timedelta
 import re
 
 api_id = 1474940
 api_hash = "779e8d2b32ef76d0b7a11fb5f132a6b6"
-bot_token = "6513923912:AAHfSOlUfPSCR-CSRs6S4jDpl3Meb8pIpQM"
+bot_token = "5804042113:AAH4c4WG0JOuo8S3r9RfnXdjPg89iPdDMug"
 
 app = Client(
         "my_bot",
@@ -17,6 +18,8 @@ app = Client(
         bot_token = bot_token
 )
 
+
+initial_time = datetime.now()
 link_pattern = re.compile(r'https:\/\/t.me\/\+\w+|t.me\/\+\w+')
 mention_pattern = re.compile(r'@((?!all)[\w\d]+)') 
 
@@ -100,56 +103,23 @@ async def start(client, message):
         keyboard = InlineKeyboardMarkup([[button]])
         startstr = "🌟 Greetings! I am a modern Telegram bot here to assist you in maintaining a link-free environment.\n\n 🚨 Use /biowarn to elegantly warn users about their bio content. \n\n 🔨 Employ /bioban to gracefully ban users who persistently include links in their bios. \n\n🔇 Enhance order with /biomute to tactfully mute users. \n\n Let's keep the community thriving! \n\n 🤖 @BlazingSquad"
         await message.reply(text=startstr, reply_markup=keyboard)
-
-@app.on_message(filters.new_chat_members & filters.group)
-async def joined_check(client,message):
-        user_id = message.from_user.id
-        chat_id = message.chat.id
-        administrators = []
-        async for m in app.get_chat_members(chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS):
-                administrators.append(m.user.id)
-        base_string = '[ ](tg://user?id={})'
-        result_strings = [base_string.format(user_id) for user_id in administrators]
-        result = ' '.join(result_strings)
-        try:
-                user = await app.resolve_peer(user_id)
-                try:
-                        user_detail= await app.invoke(GetFullUser(id=user))
-                        about = user_detail.full_user.about
-                        links = link_pattern.findall(about)
-                        plink = mention_pattern.findall(about)
-                        if plink :
-                                await app.invoke(functions.channels.GetFullChannel( channel = await app.resolve_peer(plink[0])))
-                                member = await app.get_chat_member(chat_id, user_id)
-                                try:
-                                         await app.restrict_chat_member(chat_id, user_id, ChatPermissions())
-                                except Exception as e:
-                                        print(e)
-                                usrtxt = f"Dear... {member.user.first_name} {member.user.last_name if member.user.last_name else ''} \n[ ](tg://user?id={user_id}) \n 🌟 Your profile has been flagged to administrators 🚩 due to the presence of a link in your bio. {result} \n\n ID : `{user_id}`"
-                                await app.send_message(chat_id,usrtxt)
-                        if links :
-                                 member = await app.get_chat_member(chat_id, user_id)
-                                 try:
-                                         await app.restrict_chat_member(chat_id, user_id, ChatPermissions())
-                                 except Exception as e:
-                                        print(e)
-                                 usrtxt = f"Dear... {member.user.first_name} {member.user.last_name if member.user.last_name else ''} \n[ ](tg://user?id={user_id}) \n 🌟 Your profile has been flagged to administrators 🚩 due to the presence of a link in your bio. {result} \n\n ID : `{user_id}`"
-                                 await app.send_message(chat_id,usrtxt) 
-                except Exception as e:
-                        print(e)
-        except Exception as e:
-                print(e)
                 
-@app.on_message(filters.group)
+@app.on_message(filters.group & ~filters.left_chat_member)
 async def msg_check(client,message):
+        time = initial_time + timedelta(hours=int(3))
         user_id = message.from_user.id
+        first = message.from_user.first_name
+        last = message.from_user.last_name
         chat_id = message.chat.id
         administrators = []
+        menid = []
+        menid.append(user_id)
+        mentions = f"Dear... {first} {last if last else ''}\n🌟 Your profile has been flagged to administrators 🚩 due to the presence of a link in your bio. \n\n🎋 Please remove it before taking any actions\n\n ID : `{user_id}`"
         async for m in app.get_chat_members(chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS):
+                menid.append(m.user.id)
                 administrators.append(m.user.id)
-        base_string = '[ ](tg://user?id={})'
-        result_strings = [base_string.format(user_id) for user_id in administrators]
-        result = ' '.join(result_strings)
+        for id in menid:
+               mentions += f"[\u2063](tg://user?id={id})"
         try:
                 user = await app.resolve_peer(user_id)
                 try:
@@ -157,23 +127,22 @@ async def msg_check(client,message):
                         about = user_detail.full_user.about
                         links = link_pattern.findall(about)
                         plink = mention_pattern.findall(about)
-                        if plink :
+                        if plink and user_id not in administrators:
+                                await message.delete()
                                 await app.invoke(functions.channels.GetFullChannel( channel = await app.resolve_peer(plink[0])))
-                                member = await app.get_chat_member(chat_id, user_id)
                                 try:
-                                         await app.restrict_chat_member(chat_id, user_id, ChatPermissions())
+                                         await app.restrict_chat_member(chat_id, user_id, ChatPermissions(),time)
                                 except Exception as e:
                                         print(e)
-                                usrtxt = f"Dear... {member.user.first_name} {member.user.last_name if member.user.last_name else ''} \n[ ](tg://user?id={user_id}) \n 🌟 Your profile has been flagged to administrators 🚩 due to the presence of a link in your bio. {result}  \nPlease remove it before taking any actions\n\n ID : `{user_id}`"
-                                await app.send_message(chat_id,usrtxt)
-                        if links :
-                                 member = await app.get_chat_member(chat_id, user_id)
+                                 
+                                await app.send_message(chat_id,mentions)
+                        if links and user_id not in administrators:
+                                 await message.delete()
                                  try:
-                                         await app.restrict_chat_member(chat_id, user_id, ChatPermissions())
+                                         await app.restrict_chat_member(chat_id, user_id, ChatPermissions(),time)
                                  except Exception as e:
                                         print(e)
-                                 usrtxt = f"Dear... {member.user.first_name} {member.user.last_name if member.user.last_name else ''} \n[ ](tg://user?id={user_id}) \n 🌟 Your profile has been flagged to administrators 🚩 due to the presence of a link in your bio. {result}  \n💥Please remove it before taking any actions\n\n ID : `{user_id}`"
-                                 await app.send_message(chat_id,usrtxt) 
+                                 await app.send_message(chat_id,mentions) 
                 except Exception as e:
                         print(e)
         except Exception as e:
