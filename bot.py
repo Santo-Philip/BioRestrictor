@@ -8,7 +8,7 @@ import re
 
 api_id = 1474940
 api_hash = "779e8d2b32ef76d0b7a11fb5f132a6b6"
-bot_token = "6513923912:AAHfSOlUfPSCR-CSRs6S4jDpl3Meb8pIpQM"
+bot_token = "5804042113:AAH4c4WG0JOuo8S3r9RfnXdjPg89iPdDMug"
 
 app = Client(
         "my_bot",
@@ -53,12 +53,12 @@ async def biocmd(client, message):
                                                                 if r:
                                                                         if message.command[0] == 'biowarn':
                                                                            member = await app.get_chat_member(chat_id, user_id)
-                                                                           usrtxt = f"Dear... {member.user.first_name} {member.user.last_name if member.user.last_name else ''} [ ](tg://user?id={user_id}) \n\n 🌟 We value your presence here, but kindly note that adding links in the bio is not allowed in this group. Let's keep the focus on engaging discussions. Thank you for your cooperation! 🙌 \n\n #CommunityGuidelines"
+                                                                           usrtxt = f"Dear... {member.user.first_name} {member.user.last_name if member.user.last_name else ''}\n [ ](tg://user?id={user_id}) \n 🌟 We value your presence here, but kindly note that adding links in the bio is not allowed in this group. Let's keep the focus on engaging discussions. Thank you for your cooperation! 🙌 \n\n #CommunityGuidelines"
                                                                            await app.send_message(chat_id,usrtxt) 
                                                                         if message.command[0] == 'biomute':
                                                                            await app.restrict_chat_member(chat_id, user_id, ChatPermissions())
                                                                            member = await app.get_chat_member(chat_id, user_id)
-                                                                           usrtxt = f"Dear... {member.user.first_name} {member.user.last_name} [ ](tg://user?id={user_id}) \n\n 🌟 We value your presence here, but kindly note that adding links in the bio is not allowed in this group. Let's keep the focus on engaging discussions. Thank you for your cooperation! 🙌 \n\n #CommunityGuidelines"
+                                                                           usrtxt = f"Dear... {member.user.first_name} {member.user.last_name} \n[ ](tg://user?id={user_id}) \n 🌟 We value your presence here, but kindly note that adding links in the bio is not allowed in this group. Let's keep the focus on engaging discussions. Thank you for your cooperation! 🙌 \n\n #CommunityGuidelines"
                                                                            await app.send_message(chat_id,usrtxt)
                                                                         if message.command[0] == 'bioban':
                                                                            await app.ban_chat_member(chat_id, user_id)
@@ -73,12 +73,12 @@ async def biocmd(client, message):
                                         if links and user_id not in administrators:
                                                 if message.command[0] == 'biowarn':
                                                         member = await app.get_chat_member(chat_id, user_id)
-                                                        usrtxt = f"Dear... {member.user.first_name} {member.user.last_name if member.user.last_name else ''} [ ](tg://user?id={user_id}) \n\n 🌟 We value your presence here, but kindly note that adding links in the bio is not allowed in this group. Let's keep the focus on engaging discussions. Thank you for your cooperation! 🙌 \n\n #CommunityGuidelines"
+                                                        usrtxt = f"Dear... {member.user.first_name} {member.user.last_name if member.user.last_name else ''} \n[ ](tg://user?id={user_id}) \n 🌟 We value your presence here, but kindly note that adding links in the bio is not allowed in this group. Let's keep the focus on engaging discussions. Thank you for your cooperation! 🙌 \n\n #CommunityGuidelines"
                                                         await app.send_message(chat_id,usrtxt) 
                                                 if message.command[0] == 'biomute':
                                                         await app.restrict_chat_member(chat_id, user_id, ChatPermissions())
                                                         member = await app.get_chat_member(chat_id, user_id)
-                                                        usrtxt = f"Dear... {member.user.first_name} {member.user.last_name} [ ](tg://user?id={user_id}) \n\n 🌟 We value your presence here, but kindly note that adding links in the bio is not allowed in this group. Let's keep the focus on engaging discussions. Thank you for your cooperation! 🙌 \n\n #CommunityGuidelines"
+                                                        usrtxt = f"Dear... {member.user.first_name} {member.user.last_name}\n [ ](tg://user?id={user_id}) \n 🌟 We value your presence here, but kindly note that adding links in the bio is not allowed in this group. Let's keep the focus on engaging discussions. Thank you for your cooperation! 🙌 \n\n #CommunityGuidelines"
                                                         await app.send_message(chat_id,usrtxt)
                                                 if message.command[0] == 'bioban':
                                                         await app.ban_chat_member(chat_id, user_id)
@@ -125,7 +125,7 @@ async def joined_check(client,message):
                                          await app.restrict_chat_member(chat_id, user_id, ChatPermissions())
                                 except Exception as e:
                                         print(e)
-                                usrtxt = f"Dear... {member.user.first_name} {member.user.last_name if member.user.last_name else ''} [ ](tg://user?id={user_id}) \n\n 🌟 Your profile has been flagged to administrators 🚩 due to the presence of a link in your bio. {result} \n\n ID : `{user_id}`"
+                                usrtxt = f"Dear... {member.user.first_name} {member.user.last_name if member.user.last_name else ''} \n[ ](tg://user?id={user_id}) \n 🌟 Your profile has been flagged to administrators 🚩 due to the presence of a link in your bio. {result} \n\n ID : `{user_id}`"
                                 await app.send_message(chat_id,usrtxt)
                         if links :
                                  member = await app.get_chat_member(chat_id, user_id)
@@ -133,7 +133,7 @@ async def joined_check(client,message):
                                          await app.restrict_chat_member(chat_id, user_id, ChatPermissions())
                                  except Exception as e:
                                         print(e)
-                                 usrtxt = f"Dear... {member.user.first_name} {member.user.last_name if member.user.last_name else ''} [ ](tg://user?id={user_id}) \n\n 🌟 Your profile has been flagged to administrators 🚩 due to the presence of a link in your bio. {result} \n\n ID : `{user_id}`"
+                                 usrtxt = f"Dear... {member.user.first_name} {member.user.last_name if member.user.last_name else ''} \n[ ](tg://user?id={user_id}) \n 🌟 Your profile has been flagged to administrators 🚩 due to the presence of a link in your bio. {result} \n\n ID : `{user_id}`"
                                  await app.send_message(chat_id,usrtxt) 
                 except Exception as e:
                         print(e)
@@ -164,7 +164,7 @@ async def msg_check(client,message):
                                          await app.restrict_chat_member(chat_id, user_id, ChatPermissions())
                                 except Exception as e:
                                         print(e)
-                                usrtxt = f"Dear... {member.user.first_name} {member.user.last_name if member.user.last_name else ''} [ ](tg://user?id={user_id}) \n\n 🌟 Your profile has been flagged to administrators 🚩 due to the presence of a link in your bio. {result}  \n💥Please remove it before taking any actions\n\n ID : `{user_id}`"
+                                usrtxt = f"Dear... {member.user.first_name} {member.user.last_name if member.user.last_name else ''} \n[ ](tg://user?id={user_id}) \n 🌟 Your profile has been flagged to administrators 🚩 due to the presence of a link in your bio. {result}  \nPlease remove it before taking any actions\n\n ID : `{user_id}`"
                                 await app.send_message(chat_id,usrtxt)
                         if links :
                                  member = await app.get_chat_member(chat_id, user_id)
@@ -172,7 +172,7 @@ async def msg_check(client,message):
                                          await app.restrict_chat_member(chat_id, user_id, ChatPermissions())
                                  except Exception as e:
                                         print(e)
-                                 usrtxt = f"Dear... {member.user.first_name} {member.user.last_name if member.user.last_name else ''} [ ](tg://user?id={user_id}) \n\n 🌟 Your profile has been flagged to administrators 🚩 due to the presence of a link in your bio. {result}  \n💥Please remove it before taking any actions\n\n ID : `{user_id}`"
+                                 usrtxt = f"Dear... {member.user.first_name} {member.user.last_name if member.user.last_name else ''} \n[ ](tg://user?id={user_id}) \n 🌟 Your profile has been flagged to administrators 🚩 due to the presence of a link in your bio. {result}  \n💥Please remove it before taking any actions\n\n ID : `{user_id}`"
                                  await app.send_message(chat_id,usrtxt) 
                 except Exception as e:
                         print(e)
