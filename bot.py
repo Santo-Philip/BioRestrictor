@@ -8,7 +8,7 @@ import re
 
 api_id = 1474940
 api_hash = "779e8d2b32ef76d0b7a11fb5f132a6b6"
-bot_token = "6513923912:AAHfSOlUfPSCR-CSRs6S4jDpl3Meb8pIpQM"
+bot_token = "5804042113:AAH4c4WG0JOuo8S3r9RfnXdjPg89iPdDMug"
 
 app = Client(
         "my_bot",
@@ -121,11 +121,58 @@ async def joined_check(client,message):
                         if plink :
                                 await app.invoke(functions.channels.GetFullChannel( channel = await app.resolve_peer(plink[0])))
                                 member = await app.get_chat_member(chat_id, user_id)
-                                usrtxt = f"Dear... {member.user.first_name} {member.user.last_name if member.user.last_name else ''} [ ](tg://user?id={user_id}) \n\n 🌟 Your profile has been flagged to administrators 🚩 due to the presence of a link in your bio. {result} , \n\n ID : {user_id}"
+                                try:
+                                         await app.restrict_chat_member(chat_id, user_id, ChatPermissions())
+                                except Exception as e:
+                                        print(e)
+                                usrtxt = f"Dear... {member.user.first_name} {member.user.last_name if member.user.last_name else ''} [ ](tg://user?id={user_id}) \n\n 🌟 Your profile has been flagged to administrators 🚩 due to the presence of a link in your bio. {result} \n\n ID : `{user_id}`"
                                 await app.send_message(chat_id,usrtxt)
                         if links :
                                  member = await app.get_chat_member(chat_id, user_id)
-                                 usrtxt = f"Dear... {member.user.first_name} {member.user.last_name if member.user.last_name else ''} [ ](tg://user?id={user_id}) \n\n 🌟 Your profile has been flagged to administrators 🚩 due to the presence of a link in your bio. {result} \n\n ID : {user_id}"
+                                 try:
+                                         await app.restrict_chat_member(chat_id, user_id, ChatPermissions())
+                                 except Exception as e:
+                                        print(e)
+                                 usrtxt = f"Dear... {member.user.first_name} {member.user.last_name if member.user.last_name else ''} [ ](tg://user?id={user_id}) \n\n 🌟 Your profile has been flagged to administrators 🚩 due to the presence of a link in your bio. {result} \n\n ID : `{user_id}`"
+                                 await app.send_message(chat_id,usrtxt) 
+                except Exception as e:
+                        print(e)
+        except Exception as e:
+                print(e)
+                
+@app.on_message(filters.group)
+async def msg_check(client,message):
+        user_id = message.from_user.id
+        chat_id = message.chat.id
+        administrators = []
+        async for m in app.get_chat_members(chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS):
+                administrators.append(m.user.id)
+        base_string = '[ ](tg://user?id={})'
+        result_strings = [base_string.format(user_id) for user_id in administrators]
+        result = ' '.join(result_strings)
+        try:
+                user = await app.resolve_peer(user_id)
+                try:
+                        user_detail= await app.invoke(GetFullUser(id=user))
+                        about = user_detail.full_user.about
+                        links = link_pattern.findall(about)
+                        plink = mention_pattern.findall(about)
+                        if plink :
+                                await app.invoke(functions.channels.GetFullChannel( channel = await app.resolve_peer(plink[0])))
+                                member = await app.get_chat_member(chat_id, user_id)
+                                try:
+                                         await app.restrict_chat_member(chat_id, user_id, ChatPermissions())
+                                except Exception as e:
+                                        print(e)
+                                usrtxt = f"Dear... {member.user.first_name} {member.user.last_name if member.user.last_name else ''} [ ](tg://user?id={user_id}) \n\n 🌟 Your profile has been flagged to administrators 🚩 due to the presence of a link in your bio. {result}  \n💥Please remove it before taking any actions\n\n ID : `{user_id}`"
+                                await app.send_message(chat_id,usrtxt)
+                        if links :
+                                 member = await app.get_chat_member(chat_id, user_id)
+                                 try:
+                                         await app.restrict_chat_member(chat_id, user_id, ChatPermissions())
+                                 except Exception as e:
+                                        print(e)
+                                 usrtxt = f"Dear... {member.user.first_name} {member.user.last_name if member.user.last_name else ''} [ ](tg://user?id={user_id}) \n\n 🌟 Your profile has been flagged to administrators 🚩 due to the presence of a link in your bio. {result}  \n💥Please remove it before taking any actions\n\n ID : `{user_id}`"
                                  await app.send_message(chat_id,usrtxt) 
                 except Exception as e:
                         print(e)
