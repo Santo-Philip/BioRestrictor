@@ -145,8 +145,7 @@ async def msg_check(client, message):
     administrators = []
     menid = [user_id]
     mentions = (f"Dear... {first} {last if last else ''}\n🌟 Your profile has been flagged to administrators 🚩 due to "
-                f"the presence of a link in your bio. \n\n🎋 Please remove it before taking any actions\n\n ID : `{
-                user_id}`")
+                f"the presence of a link in your bio. \n\n🎋Please remove it before taking any actions\n\n ID : {user_id}")
     async for m in app.get_chat_members(chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS):
         menid.append(m.user.id)
         administrators.append(m.user.id)
