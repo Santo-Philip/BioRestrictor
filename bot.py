@@ -1,3 +1,5 @@
+import asyncio
+
 from pyrogram import Client, filters, enums
 from pyrogram.types import ChatPermissions
 from pyrogram.raw.functions.users import GetFullUser
@@ -43,6 +45,7 @@ async def biocmd(client, message):
                             id=userrr
                         )
                     )
+                    await asyncio.sleep(3)
                     about = ll.full_user.about
                     if about != None:
                         links = link_pattern.findall(about)
@@ -56,6 +59,7 @@ async def biocmd(client, message):
                                     channel=await app.resolve_peer(plink[0])
                                 )
                             )
+                            await asyncio.sleep(3)
                             if r:
                                 if message.command[0] == 'biowarn':
                                     member = await app.get_chat_member(chat_id, user_id)
