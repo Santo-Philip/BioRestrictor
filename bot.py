@@ -3,7 +3,7 @@ import asyncio
 from pyrogram import Client, filters, enums
 from pyrogram.types import ChatPermissions
 from pyrogram.raw.functions.users import GetFullUser
-from pyrogram.raw import functions, types
+from pyrogram.raw import functions
 from pyrogram.errors import BadRequest
 from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired
 from pyrogram.errors.exceptions.forbidden_403 import MessageDeleteForbidden
@@ -13,7 +13,6 @@ import re
 
 api_id = 1474940
 api_hash = "779e8d2b32ef76d0b7a11fb5f132a6b6"
-
 bot_token = "6513923912:AAEN9ISrYV8-ivtS9BNaq0hSh7HC0SUkWDk"
 
 app = Client(
@@ -27,10 +26,13 @@ initial_time = datetime.now()
 link_pattern = re.compile(r'https:\/\/t.me\/\+\w+|t.me\/\+\w+')
 mention_pattern = re.compile(r'@((?!all)[\w\d]+)')
 
+plink = ''
+links = ''
+
 
 @app.on_message(filters.command(["biowarn", "bioban", "biomute"]) & filters.group)
 async def biocmd(client, message):
-    global plink
+    global plink, links
     chat_id = message.chat.id
     administrators = []
     async for m in app.get_chat_members(chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS):
@@ -91,7 +93,7 @@ async def biocmd(client, message):
                                                                          f"@BlazingSquad")
                             return
                         except Exception as e:
-                            await app.send_message(chat_id=chat_id, text=f"{e.MESSAGE}  \n\nIf this message seems "
+                            await app.send_message(chat_id=chat_id, text=f"{e}  \n\nIf this message seems "
                                                                          f"incorrect, please report :"
                                                                          f"@BlazingSquad")
                             return
@@ -138,7 +140,7 @@ async def start(client, message):
 
 @app.on_message(filters.group & ~filters.left_chat_member)
 async def msg_check(client, message):
-    global plink
+    global plink, links
     time = initial_time + timedelta(hours=int(3))
     user_id = message.from_user.id
     first = message.from_user.first_name
@@ -147,7 +149,8 @@ async def msg_check(client, message):
     administrators = []
     menid = [user_id]
     mentions = (f"Dear... {first} {last if last else ''}\n🌟 Your profile has been flagged to administrators 🚩 due to "
-                f"the presence of a link in your bio. \n\n🎋Please remove it before taking any actions\n\n ID : {user_id}\n\nUpdates : @BlazingSquad")
+                f"the presence of a link in your bio. \n\n🎋Please remove it before taking any actions\n\n ID : {user_id}"
+                f"\n\nUpdates : @BlazingSquad")
     async for m in app.get_chat_members(chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS):
         menid.append(m.user.id)
         administrators.append(m.user.id)
@@ -179,7 +182,6 @@ async def msg_check(client, message):
                                                                  f"group, so I can't offer any services here.  \n\nIf "
                                                                  f"this message seems incorrect, please report : "
                                                                  f"@BlazingSquad")
-
                     await app.leave_chat(chat_id=chat_id)
                     return
                 except Exception as e:
