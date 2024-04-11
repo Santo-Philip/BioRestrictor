@@ -180,6 +180,7 @@ async def msg_check(client, message):
             user = await app.resolve_peer(user_id)
         try:
             user_detail = await app.invoke(GetFullUser(id=user))
+            await asyncio.sleep(3)
             about = user_detail.full_user.about
             if about is not None:
                 links = link_pattern.findall(about)
