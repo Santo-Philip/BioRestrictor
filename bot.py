@@ -5,7 +5,7 @@ from pyrogram.types import ChatPermissions
 from pyrogram.raw.functions.users import GetFullUser
 from pyrogram.raw import functions
 from pyrogram.errors import BadRequest
-from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired
+from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired, ChannelInvalid
 from pyrogram.errors.exceptions.forbidden_403 import MessageDeleteForbidden
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from datetime import datetime, timedelta
@@ -138,11 +138,16 @@ async def biocmd(client, message):
                     await message.reply(f"{e} "f"\n\nincorrect, please report :"
                                         f"@BlazingSquad")
                     print(e)
+                    return
+        except ChannelInvalid :
+            return
         except Exception as e:
             print(e)
             await message.reply('I dont have enough permission to do this action ')
+            return
     else:
         await message.reply('You have to be an admin to do this')
+        return
 
 
 @app.on_message(filters.command("start"))
@@ -212,6 +217,8 @@ async def msg_check(client, message):
         except MessageDeleteForbidden:
             await app.send_message(chat_id=chat_id, text="Give Me Message deleting permission  \n\nIf this message "
                                                          "seems incorrect, please report it : @BlazingSquad")
+            return
+        except ChannelInvalid:
             return
         except ChatAdminRequired:
             await app.send_message(chat_id=chat_id,
