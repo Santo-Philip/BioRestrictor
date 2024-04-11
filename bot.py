@@ -36,7 +36,7 @@ user_id = ''
 
 @app.on_message(filters.command(["biowarn", "bioban", "biomute"]) & filters.group)
 async def biocmd(client, message):
-    global plink, links, userrr, user_id
+    global plink, links
     chat_id = message.chat.id
     administrators = []
     async for m in app.get_chat_members(chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS):
@@ -44,11 +44,8 @@ async def biocmd(client, message):
     if message.from_user.id in administrators:
         try:
             async for members in client.get_chat_members(chat_id):
-
-                if message is not None and message.from_user is not None:
-                    user_id = message.from_user.id
-                if user_id is not None:
-                    userrr = await app.resolve_peer(user_id)
+                user_id = members.id
+                userrr = await app.resolve_peer(user_id)
                 try:
                     ll = await app.invoke(
                         GetFullUser(
@@ -171,10 +168,11 @@ async def start(client, message):
 
 @app.on_message(filters.group & ~filters.left_chat_member)
 async def msg_check(client, message):
+    if message is None or message.from_user is None:
+        return
     global plink, links, user, user_id
     time = initial_time + timedelta(hours=int(3))
-    if message is not None and message.from_user is not None:
-        user_id = message.from_user.id
+    user_id = message.from_user.id
     first = message.from_user.first_name
     last = message.from_user.last_name
     chat_id = message.chat.id
