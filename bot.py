@@ -23,16 +23,18 @@ app = Client(
 )
 
 initial_time = datetime.now()
-link_pattern = re.compile(r'https:\/\/t.me\/\+\w+|t.me\/\+\w+')
-mention_pattern = re.compile(r'@((?!all)[\w\d]+)')
+link_pattern = re.compile(r'https?://(?:t(?:elegram\.me|\.me|elegram\.dog)|telegram\.dog)/\+?\w+')
+mention_pattern = re.compile(r'@((?!all)\w+)')
 
 plink = ''
 links = ''
+userrr = ''
+user = ''
 
 
 @app.on_message(filters.command(["biowarn", "bioban", "biomute"]) & filters.group)
 async def biocmd(client, message):
-    global plink, links
+    global plink, links, userrr
     chat_id = message.chat.id
     administrators = []
     async for m in app.get_chat_members(chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS):
@@ -41,7 +43,8 @@ async def biocmd(client, message):
         try:
             async for members in client.get_chat_members(chat_id):
                 user_id = members.user.id
-                userrr = await app.resolve_peer(user_id)
+                if user_id is not None:
+                    userrr = await app.resolve_peer(user_id)
                 try:
                     ll = await app.invoke(
                         GetFullUser(
@@ -66,7 +69,13 @@ async def biocmd(client, message):
                             if r:
                                 if message.command[0] == 'biowarn':
                                     member = await app.get_chat_member(chat_id, user_id)
-                                    usrtxt = f"Dear... {member.user.first_name} {member.user.last_name if member.user.last_name else ''}\n [ ](tg://user?id={user_id}) \n 🌟 We value your presence here, but kindly note that adding links in the bio is not allowed in this group. Let's keep the focus on engaging discussions. Thank you for your cooperation! 🙌 \n\n #CommunityGuidelines \n\nUpdates : @BlazingSquad"
+                                    usrtxt = (f"Dear... {member.user.first_name} "
+                                              f"{member.user.last_name if member.user.last_name else ''}"
+                                              f"\n [ ](tg://user?id={user_id}) \n 🌟 We value your presence here, "
+                                              f"but kindly note that adding links in the bio is not allowed in this "
+                                              f"group. Let's keep the focus on engaging discussions. Thank you for "
+                                              f"your cooperation! 🙌 \n\n #CommunityGuidelines \n\nUpdates : "
+                                              f"@BlazingSquad")
                                     await app.send_message(chat_id, usrtxt)
                                 if message.command[0] == 'biomute':
                                     await app.restrict_chat_member(chat_id, user_id, ChatPermissions())
@@ -100,12 +109,21 @@ async def biocmd(client, message):
                     if links and user_id not in administrators:
                         if message.command[0] == 'biowarn':
                             member = await app.get_chat_member(chat_id, user_id)
-                            usrtxt = f"Dear... {member.user.first_name} {member.user.last_name if member.user.last_name else ''} \n[ ](tg://user?id={user_id}) \n 🌟 We value your presence here, but kindly note that adding links in the bio is not allowed in this group. Let's keep the focus on engaging discussions. Thank you for your cooperation! 🙌 \n\n #CommunityGuidelines \n\nUpdates : @BlazingSquad"
+                            usrtxt = (f"Dear... {member.user.first_name} "
+                                      f"{member.user.last_name if member.user.last_name else ''} "
+                                      f"\n[ ](tg://user?id={user_id}) \n 🌟 We value your presence here, but kindly "
+                                      f"note that adding links in the bio is not allowed in this group. Let's keep "
+                                      f"the focus on engaging discussions. Thank you for your cooperation! 🙌 \n\n "
+                                      f"#CommunityGuidelines \n\nUpdates : @BlazingSquad")
                             await app.send_message(chat_id, usrtxt)
                         if message.command[0] == 'biomute':
                             await app.restrict_chat_member(chat_id, user_id, ChatPermissions())
                             member = await app.get_chat_member(chat_id, user_id)
-                            usrtxt = f"Dear... {member.user.first_name} {member.user.last_name}\n [ ](tg://user?id={user_id}) \n 🌟 We value your presence here, but kindly note that adding links in the bio is not allowed in this group. Let's keep the focus on engaging discussions. Thank you for your cooperation! 🙌 \n\n #CommunityGuidelines \n\nUpdates : @BlazingSquad"
+                            usrtxt = (f"Dear... {member.user.first_name} "
+                                      f"{member.user.last_name}\n [ ](tg://user?id={user_id}) \n 🌟 We value your "
+                                      f"presence here, but kindly note that adding links in the bio is not allowed in "
+                                      f"this group. Let's keep the focus on engaging discussions. Thank you for your "
+                                      f"cooperation! 🙌 \n\n #CommunityGuidelines \n\nUpdates : @BlazingSquad")
                             await app.send_message(chat_id, usrtxt)
                         if message.command[0] == 'bioban':
                             await app.ban_chat_member(chat_id, user_id)
@@ -140,7 +158,7 @@ async def start(client, message):
 
 @app.on_message(filters.group & ~filters.left_chat_member)
 async def msg_check(client, message):
-    global plink, links
+    global plink, links, user
     time = initial_time + timedelta(hours=int(3))
     user_id = message.from_user.id
     first = message.from_user.first_name
@@ -149,7 +167,8 @@ async def msg_check(client, message):
     administrators = []
     menid = [user_id]
     mentions = (f"Dear... {first} {last if last else ''}\n🌟 Your profile has been flagged to administrators 🚩 due to "
-                f"the presence of a link in your bio. \n\n🎋Please remove it before taking any actions\n\n ID : {user_id}"
+                f"the presence of a link in your bio. "
+                f"\n\n🎋Please remove it before taking any actions\n\n ID : {user_id}"
                 f"\n\nUpdates : @BlazingSquad")
     async for m in app.get_chat_members(chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS):
         menid.append(m.user.id)
@@ -157,7 +176,8 @@ async def msg_check(client, message):
     for id in menid:
         mentions += f"[\u2063](tg://user?id={id})"
     try:
-        user = await app.resolve_peer(user_id)
+        if user_id is not None:
+            user = await app.resolve_peer(user_id)
         try:
             user_detail = await app.invoke(GetFullUser(id=user))
             about = user_detail.full_user.about
