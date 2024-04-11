@@ -179,6 +179,7 @@ async def msg_check(client, message):
                                                                  f"group, so I can't offer any services here.  \n\nIf "
                                                                  f"this message seems incorrect, please report : "
                                                                  f"@BlazingSquad")
+
                     await app.leave_chat(chat_id=chat_id)
                     return
                 except Exception as e:
