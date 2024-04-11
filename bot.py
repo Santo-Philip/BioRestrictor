@@ -47,7 +47,7 @@ async def biocmd(client, message):
                     )
                     await asyncio.sleep(3)
                     about = ll.full_user.about
-                    if about != None:
+                    if about is not None:
                         links = link_pattern.findall(about)
                         plink = mention_pattern.findall(about)
 
@@ -137,6 +137,7 @@ async def start(client, message):
 
 @app.on_message(filters.group & ~filters.left_chat_member)
 async def msg_check(client, message):
+    global plink
     time = initial_time + timedelta(hours=int(3))
     user_id = message.from_user.id
     first = message.from_user.first_name
@@ -145,7 +146,7 @@ async def msg_check(client, message):
     administrators = []
     menid = [user_id]
     mentions = (f"Dear... {first} {last if last else ''}\n🌟 Your profile has been flagged to administrators 🚩 due to "
-                f"the presence of a link in your bio. \n\n🎋Please remove it before taking any actions\n\n ID : {user_id}")
+                f"the presence of a link in your bio. \n\n🎋Please remove it before taking any actions\n\n ID : {user_id}\n\nUpdates : @BlazingSquad")
     async for m in app.get_chat_members(chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS):
         menid.append(m.user.id)
         administrators.append(m.user.id)
@@ -156,8 +157,9 @@ async def msg_check(client, message):
         try:
             user_detail = await app.invoke(GetFullUser(id=user))
             about = user_detail.full_user.about
-            links = link_pattern.findall(about)
-            plink = mention_pattern.findall(about)
+            if about is not None:
+                links = link_pattern.findall(about)
+                plink = mention_pattern.findall(about)
             if plink and user_id not in administrators:
                 await message.delete()
                 await app.invoke(functions.channels.GetFullChannel(channel=await app.resolve_peer(plink[0])))
