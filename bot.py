@@ -7,6 +7,7 @@ from pyrogram.raw import functions
 from pyrogram.errors import BadRequest
 from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired, ChannelInvalid
 from pyrogram.errors.exceptions.forbidden_403 import MessageDeleteForbidden
+from pyrogram.errors.exceptions.flood_420 import FloodWait
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from datetime import datetime, timedelta
 import re
@@ -139,6 +140,8 @@ async def biocmd(client, message):
                                         f"@BlazingSquad")
                     print(e)
                     return
+        except FloodWait as f:
+            await asyncio.sleep(f.value)
         except ChannelInvalid :
             return
         except Exception as e:
@@ -214,6 +217,8 @@ async def msg_check(client, message):
                     await app.send_message(chat_id=chat_id, text=f"{e} \n\n Report : @BlazingSquad")
                     return
                 await app.send_message(chat_id, mentions)
+        except FloodWait as f:
+            await asyncio.sleep(f.value)
         except MessageDeleteForbidden:
             await app.send_message(chat_id=chat_id, text="Give Me Message deleting permission  \n\nIf this message "
                                                          "seems incorrect, please report it : @BlazingSquad")
