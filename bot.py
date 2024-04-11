@@ -5,7 +5,7 @@ from pyrogram.types import ChatPermissions
 from pyrogram.raw.functions.users import GetFullUser
 from pyrogram.raw import functions
 from pyrogram.errors import BadRequest
-from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired, ChannelInvalid
+from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired, ChannelInvalid,UsernameInvalid
 from pyrogram.errors.exceptions.forbidden_403 import MessageDeleteForbidden
 from pyrogram.errors.exceptions.flood_420 import FloodWait
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
@@ -31,11 +31,12 @@ plink = ''
 links = ''
 userrr = ''
 user = ''
+user_id = ''
 
 
 @app.on_message(filters.command(["biowarn", "bioban", "biomute"]) & filters.group)
 async def biocmd(client, message):
-    global plink, links, userrr
+    global plink, links, userrr, user_id
     chat_id = message.chat.id
     administrators = []
     async for m in app.get_chat_members(chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS):
@@ -43,7 +44,9 @@ async def biocmd(client, message):
     if message.from_user.id in administrators:
         try:
             async for members in client.get_chat_members(chat_id):
-                user_id = members.user.id
+
+                if message is not None and message.from_user is not None:
+                    user_id = message.from_user.id
                 if user_id is not None:
                     userrr = await app.resolve_peer(user_id)
                 try:
@@ -142,6 +145,8 @@ async def biocmd(client, message):
                     return
         except FloodWait as f:
             await asyncio.sleep(f.value)
+        except UsernameInvalid:
+            return
         except ChannelInvalid :
             return
         except Exception as e:
@@ -166,9 +171,10 @@ async def start(client, message):
 
 @app.on_message(filters.group & ~filters.left_chat_member)
 async def msg_check(client, message):
-    global plink, links, user
+    global plink, links, user, user_id
     time = initial_time + timedelta(hours=int(3))
-    user_id = message.from_user.id
+    if message is not None and message.from_user is not None:
+        user_id = message.from_user.id
     first = message.from_user.first_name
     last = message.from_user.last_name
     chat_id = message.chat.id
@@ -224,6 +230,8 @@ async def msg_check(client, message):
                                                          "seems incorrect, please report it : @BlazingSquad")
             return
         except ChannelInvalid:
+            return
+        except UsernameInvalid:
             return
         except ChatAdminRequired:
             await app.send_message(chat_id=chat_id,
