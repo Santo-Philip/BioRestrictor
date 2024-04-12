@@ -19,7 +19,7 @@ mention_pattern = re.compile(r'@((?!all)\w+)')
 cache = dc.Cache("/cache")
 
 
-@app.on_message((filters.media | filters.text | filters.document))
+@app.on_message((filters.media | filters.text | filters.document) & filters.group)
 async def msg_check(client, message: Message):
     if message is None or message.from_user is None:
         return
