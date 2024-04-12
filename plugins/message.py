@@ -20,7 +20,6 @@ plink = ''
 links = ''
 userrr = ''
 user = ''
-user_id = ''
 cache = dc.Cache("/cache")
 
 
@@ -28,7 +27,7 @@ cache = dc.Cache("/cache")
 async def msg_check(client, message: Message):
     if message is None or message.from_user is None:
         return
-    global plink, links, user, user_id
+    global plink, links, user
     time = initial_time + timedelta(hours=int(4))
     user_id = message.from_user.id
     menid = [user_id]
@@ -99,7 +98,7 @@ async def msg_check(client, message: Message):
             return
         except ChatAdminRequired:
             await client.send_message(chat_id=chat_id,
-                                      text=f"I don't have administrative privileges in this group, so I can't offer any "
+                                      text=f"I don't have administrative privileges in this group, so I can't offer any"
                                            f"services here.  \n\nIf this message seems incorrect, please report : "
                                            f"@BlazingSquad")
             await client.leave_chat(chat_id=chat_id)
