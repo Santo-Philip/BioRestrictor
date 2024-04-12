@@ -26,7 +26,7 @@ async def reload(bot, msg):
 
             cache.set(chat, cached_admins)
             print(f"Reloaded admins for chat {chat}")
-            msg.reply('Reloaded admins')
+            await msg.reply('Reloaded admins')
     except Exception as e:
             print(f"Error reloading admins for chat {chat}: {e}")
-            msg.reply(f"Error reloading admins : {e}\n\nReport : @BlazingSquad")
+            await msg.reply(f"Error reloading admins : {e}\n\nReport : @BlazingSquad")
