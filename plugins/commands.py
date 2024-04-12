@@ -24,7 +24,7 @@ cache = dc.Cache("/cache")
 
 @app.on_message(filters.command(["biowarn", "bioban", "biomute"]) & filters.group)
 async def biocmd(client, message):
-    await message.reply('Please Wait checking users')
+    q = await message.reply('Please Wait checking users')
     global plink, links
     chat_id = message.chat.id
     administrators = cache.get(chat_id)
@@ -53,7 +53,6 @@ async def biocmd(client, message):
                                     channel=await client.resolve_peer(plink[0])
                                 )
                             )
-                            await asyncio.sleep(3)
                             if r:
                                 if message.command[0] == 'biowarn':
                                     member = await client.get_chat_member(chat_id, user_id)
@@ -140,3 +139,4 @@ async def biocmd(client, message):
     else:
         await message.reply('You have to be an admin to do this')
         return
+    await q.delete()

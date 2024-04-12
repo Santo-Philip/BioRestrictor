@@ -9,5 +9,5 @@ async def start(client, message):
     startstr = ("🌟 Greetings! I am a modern Telegram bot here to assist you in maintaining a link-free "
                 "environment.\n\n 🚨 Use /biowarn to elegantly warn users about their bio content. \n\n 🔨 Employ "
                 "/bioban to gracefully ban users who persistently include links in their bios. \n\n🔇 Enhance order "
-                "with /biomute to tactfully mute users. \n\n Let's keep the community thriving! \n\n 🤖 @BlazingSquad")
+                "with /biomute to tactfully mute users.\n\nUse /reload in case the bot can't recognize admins. \n\n Let's keep the community thriving! \n\n 🤖 @BlazingSquad")
     await message.reply(text=startstr, reply_markup=keyboard)
