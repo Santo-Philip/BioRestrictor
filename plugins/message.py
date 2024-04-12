@@ -56,18 +56,19 @@ async def msg_check(client, message: Message):
                 plink = mention_pattern.findall(about)
                 if plink:
                     if user_id not in administrators:
-                        await message.delete()
                         await client.invoke(
                             functions.channels.GetFullChannel(
                                 channel=await app.resolve_peer(peer_id=plink[0], self=client)))
                         await client.restrict_chat_member(chat_id, user_id, ChatPermissions(), time)
                         await client.send_message(chat_id=chat_id, text=mentions)
+                        await message.delete()
                 if links:
                     if user_id not in administrators:
                         await message.delete()
                         try:
                             await client.restrict_chat_member(chat_id, user_id, ChatPermissions(), time)
                             await client.send_message(chat_id=chat_id, text=mentions)
+                            await message.delete()
                         except ChatAdminRequired:
                             await client.send_message(chat_id=chat_id, text=f"I don't have administrative privileges "
                                                                             f"in this"
