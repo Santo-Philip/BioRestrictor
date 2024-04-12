@@ -3,7 +3,7 @@ from pyrogram import Client as app, filters
 from pyrogram.types import ChatPermissions, Message
 from pyrogram.raw.functions.users import GetFullUser
 from pyrogram.raw import functions
-from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired, ChannelInvalid, UsernameInvalid
+from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired, ChannelInvalid, UsernameInvalid,UserAdminInvalid
 from pyrogram.errors.exceptions.forbidden_403 import MessageDeleteForbidden
 from pyrogram.errors.exceptions.flood_420 import FloodWait
 from datetime import datetime, timedelta
@@ -96,6 +96,8 @@ async def msg_check(client, message: Message):
                                        f"services here.  \n\nIf this message seems incorrect, please report : "
                                        f"@BlazingSquad")
         await client.leave_chat(chat_id=chat_id)
+        return
+    except UserAdminInvalid:
         return
     except Exception as e:
         print(e)
