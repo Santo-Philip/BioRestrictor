@@ -8,27 +8,24 @@ from pyrogram.errors.exceptions.bad_request_400 import ChannelInvalid, UsernameI
 from pyrogram.errors.exceptions.flood_420 import FloodWait
 from datetime import datetime
 import re
-import diskcache as dc
 
 initial_time = datetime.now()
-link_pattern = re.compile(r'https?://(?:t(?:elegram\.me|\.me|elegram\.dog)|telegram\.dog)/\+?\w+')
+link_pattern = re.compile(r'(?:https?://)?(?:t(?:elegram\.me|\.me|elegram\.dog)|telegram\.dog)/(?:\+\w+|\w+)')
 mention_pattern = re.compile(r'@((?!all)\w+)')
 
 plink = ''
 links = ''
-userrr = ''
-user = ''
-user_id = ''
-cache = dc.Cache("/cache")
 
 
-@app.on_message(filters.command(["biowarn", "bioban", "biomute"]) & filters.group)
+@app.on_message(filters.command(["biowarn", "bioban", "biomute"]))
 async def biocmd(client, message):
     q = await message.reply('Please Wait checking users')
     global plink, links
     chat_id = message.chat.id
-    administrators = cache.get(chat_id)
-    if message.from_user.id in administrators:
+    admins = []
+    async for m in client.get_chat_members(chat_id=chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS):
+        admins.append(m.user.id)
+    if message.from_user.id in admins:
         try:
             async for members in client.get_chat_members(chat_id):
                 user_id = members.user.id
@@ -45,7 +42,7 @@ async def biocmd(client, message):
                         links = link_pattern.findall(about)
                         plink = mention_pattern.findall(about)
 
-                    if plink and user_id not in administrators:
+                    if plink and user_id not in admins:
 
                         try:
                             r = await client.invoke(
@@ -93,7 +90,7 @@ async def biocmd(client, message):
                                                                             f"incorrect, please report :"
                                                                             f"@BlazingSquad")
                             return
-                    if links and user_id not in administrators:
+                    if links and user_id not in admins:
                         if message.command[0] == 'biowarn':
                             member = await client.get_chat_member(chat_id, user_id)
                             usrtxt = (f"Dear... {member.user.first_name} "
@@ -136,7 +133,8 @@ async def biocmd(client, message):
             print(e)
             await message.reply('I dont have enough permission to do this action ')
             return
+        await q.delete()
     else:
         await message.reply('You have to be an admin to do this')
+        await q.delete()
         return
-    await q.delete()
