@@ -1,0 +1,10 @@
+services:
+  - type: worker
+    name: my-telegram-bot
+    env: python
+    region: oregon # adjust to your preferred region
+    plan: free # or other plan according to your needs
+    buildCommand: 
+      - pip install -r requirements.txt
+    startCommand: python bot.py
+    autoDeploy: true
