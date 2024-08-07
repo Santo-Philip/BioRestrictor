@@ -8,6 +8,8 @@ from pyrogram.errors.exceptions.bad_request_400 import ChannelInvalid, UsernameI
 from pyrogram.errors.exceptions.flood_420 import FloodWait
 from datetime import datetime
 import re
+from utils.mongo import Database
+from config import LOG
 
 initial_time = datetime.now()
 link_pattern = re.compile(r'(?:https?://)?(?:t(?:elegram\.me|\.me|elegram\.dog)|telegram\.dog)/(?:\+\w+|\w+)')
@@ -17,11 +19,16 @@ plink = ''
 links = ''
 
 
-@app.on_message(filters.command(["biowarn", "bioban", "biomute"]))
+@app.on_message(filters.command(["biowarn", "bioban", "biomute"]) & filters.group)
 async def biocmd(client, message):
     q = await message.reply('Please Wait checking users')
     global plink, links
     chat_id = message.chat.id
+    exist = Database.fetchOneFrom('biogroup',chat_id,'user')
+    if exist is None:
+      data = {'user': chat_id}
+      Database.insert('biogroup',data)
+      await client.send_message(chat_id=LOG,text=f"__#NewGroup__\n\nGroup : `{chat_id}`\nName : {message.chat.title}")
     admins = []
     async for m in client.get_chat_members(chat_id=chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS):
         admins.append(m.user.id)

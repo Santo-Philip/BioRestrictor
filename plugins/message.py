@@ -7,6 +7,8 @@ from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired, UserAd
 from pyrogram.errors.exceptions.flood_420 import FloodWait
 from pyrogram.errors.exceptions.forbidden_403 import MessageDeleteForbidden
 from pyrogram.types import Message, ChatPermissions, InlineKeyboardMarkup, InlineKeyboardButton
+from utils.mongo import Database
+from config import LOG
 
 link_pattern = re.compile(r'(?:https?://)?(?:t(?:elegram\.me|\.me|elegram\.dog)|telegram\.dog)/(?:\+\w+|\w+)')
 mention_pattern = re.compile(r'@((?!all)\w+)')
@@ -25,6 +27,11 @@ async def msg_check(client, message: Message):
     first = message.from_user.first_name
     last = message.from_user.last_name
     chat_id = message.chat.id
+    exist = Database.fetchOneFrom('biogroup',chat_id,'user')
+    if exist is None:
+      data = {'user': chat_id}
+      Database.insert('biogroup',data)
+      await client.send_message(chat_id=LOG,text=f"__#NewGroup__\n\nGroup : `{chat_id}`\nName : {message.chat.title}")
     mentions = (f"Dear... {first} {last if last else ''}\n🌟 Your profile has been flagged to administrators 🚩 due to "
                 f"the presence of a link in your bio. "
                 f"\n\n🎋Please remove it before taking any actions\n\n ID : {user_id}"
